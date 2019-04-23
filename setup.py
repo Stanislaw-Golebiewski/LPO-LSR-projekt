@@ -48,7 +48,7 @@ def get_mss_object(t1, t2):
     Z dwóch par koordynatów stworzy słownik gotowy do przekazania do funkcji mss.grab()
     t1, t2: (x, y)
     """
-    return {'left': t1[0], 'top': t1[1], 'width': t2[0] - t1[0], 'hieght': t2[1] - t1[1]}
+    return {'left': t1[0], 'top': t1[1], 'width': t2[0] - t1[0], 'height': t2[1] - t1[1]}
 
 
 print(f"Zrzut zostanie wykonany za {NO_WAIT_SEC} sekund")

@@ -1,8 +1,11 @@
 import time
 import cv2
 import mss
+import json
 import numpy as np
 
+NO_WAIT_SEC = 5
+OUT_FILE_NAME = "screen.json"
 
 drawing = False
 rectanglePicked = False
@@ -10,18 +13,18 @@ rectStart = (-1, -1)
 rectStop = (-1, -1)
 
 instructions = """
-"-------------------
+-------------------
 Zaznacz obszar klikając w jego lewy-górny i prawy-górny róg.
 
-[S] - podgląd zaznaczonego miejsca
-[D] - wyjście z podglądu
+[Z] - podgląd/wyjście z podglądu zaznaczonego miejsca
+[S] - zapisz ustawienie
 [Esc] - zakończ prace
------------------"
+-------------------
 """
 
 
 def crop_window_mouse_callback(event, x, y, flags, param):
-    global drawing, rectStart, rectStop, screen_img, screen_img_clear
+    global drawing, rectStart, rectStop, screen_img, screen_img_clear, rectanglePicked
 
     if event == cv2.EVENT_LBUTTONDOWN:
         if not drawing:
@@ -40,9 +43,16 @@ def crop_window_mouse_callback(event, x, y, flags, param):
             cv2.rectangle(screen_img, rectStart, (x, y), (255, 0, 0), 2)
 
 
-SEC = 5
-print(f"Zrzut zostanie wykonany za {SEC} sekund")
-for i in range(SEC, 0, -1):
+def get_mss_object(t1, t2):
+    """
+    Z dwóch par koordynatów stworzy słownik gotowy do przekazania do funkcji mss.grab()
+    t1, t2: (x, y)
+    """
+    return {'left': t1[0], 'top': t1[1], 'width': t2[0] - t1[0], 'hieght': t2[1] - t1[1]}
+
+
+print(f"Zrzut zostanie wykonany za {NO_WAIT_SEC} sekund")
+for i in range(NO_WAIT_SEC, 0, -1):
     print(i)
     time.sleep(1)
 
@@ -67,11 +77,12 @@ showCropWindow = False
 
 while True:
     cv2.imshow("image", screen_img)
-    k = cv2.waitKey(17)
+    k = cv2.waitKey(33)
     """
     Esc --> 27
-    S   --> 100
-    D   --> 115
+    D   --> 100
+    S   --> 115
+    Z   --> 122
     """
     if k == 27:
         break
@@ -80,10 +91,16 @@ while True:
             screen_img_cropped = screen_img_clear[rectStart[1]:rectStop[1], rectStart[0]:rectStop[0]]
             screen_img = screen_img_cropped.copy()
             showCropWindow = True
-    elif k == 100:
-        if showCropWindow:
+        else:
             screen_img = screen_img_clear.copy()
             showCropWindow = False
+    elif k == 122:
+        data = get_mss_object(rectStart, rectStop)
+        print(data)
+        with open(OUT_FILE_NAME, 'w') as f:
+            json.dump(data, f, ensure_ascii=False)
+        print(f"zapisano do pliku {OUT_FILE_NAME}")
+        break
 
 
 cv2.destroyAllWindows()

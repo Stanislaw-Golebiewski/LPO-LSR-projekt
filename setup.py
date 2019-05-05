@@ -17,7 +17,8 @@ instructions = """
 Zaznacz obszar klikając w jego lewy-górny i prawy-górny róg.
 
 [Z] - podgląd/wyjście z podglądu zaznaczonego miejsca
-[S] - zapisz ustawienie
+[X] - zapisz współrzędne obrazu do pliku screen.json
+[C] - zapisz obraz do pliku
 [Esc] - zakończ prace
 -------------------
 """
@@ -77,16 +78,19 @@ showCropWindow = False
 
 while True:
     cv2.imshow("image", screen_img)
-    k = cv2.waitKey(33)
+    # ~ 1000 / 17 =~ 60 fps
+    k = cv2.waitKey(17)
     """
     Esc --> 27
+    C   --> 99
     D   --> 100
     S   --> 115
+    X   --> 120
     Z   --> 122
     """
     if k == 27:
         break
-    elif k == 115:
+    elif k == 122:
         if not showCropWindow:
             screen_img_cropped = screen_img_clear[rectStart[1]:rectStop[1], rectStart[0]:rectStop[0]]
             screen_img = screen_img_cropped.copy()
@@ -94,13 +98,14 @@ while True:
         else:
             screen_img = screen_img_clear.copy()
             showCropWindow = False
-    elif k == 122:
+    elif k == 120:
         data = get_mss_object(rectStart, rectStop)
         print(data)
         with open(OUT_FILE_NAME, 'w') as f:
             json.dump(data, f, ensure_ascii=False)
         print(f"zapisano do pliku {OUT_FILE_NAME}")
-        break
-
+    elif k == 99:
+        filename = input("nazwa pliku: ")
+        cv2.imwrite(f"{filename}.png", screen_img)
 
 cv2.destroyAllWindows()

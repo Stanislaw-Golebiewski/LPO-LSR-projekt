@@ -22,6 +22,7 @@ def fb_TemplateMatching(img_in, gray_img_in):
     return img_out
 
 
+# przy uruchomieniu (> python flappy_bird.py)
 if __name__ == "__main__":
     bird = cv2.imread('bird.png', 0)
     pipe_up = cv2.imread('pipe_up.png', 0)
@@ -37,6 +38,7 @@ if __name__ == "__main__":
     cv2.imshow("image", img_out)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+# przy zaimportowaniu jako moduł (import flappy_bird)
 else:
     bird = cv2.imread('./flappy_bird/bird.png', 0)
     pipe_up = cv2.imread('./flappy_bird/pipe_up.png', 0)

@@ -18,7 +18,8 @@ Zaznacz obszar klikając w jego lewy-górny i prawy-górny róg.
 
 [Z] - podgląd/wyjście z podglądu zaznaczonego miejsca
 [X] - zapisz współrzędne obrazu do pliku screen.json
-[C] - zapisz obraz do pliku
+[S] - zapisz obraz do pliku
+[C] - pokarz dominujący kolor w obszarze
 [Esc] - zakończ prace
 -------------------
 """
@@ -50,6 +51,11 @@ def get_mss_object(t1, t2):
     t1, t2: (x, y)
     """
     return {'left': t1[0], 'top': t1[1], 'width': t2[0] - t1[0], 'height': t2[1] - t1[1]}
+
+
+def dominant_color(img):
+    colors, count = np.unique(img.reshape(-1, img.shape[-1]), axis=0, return_counts=True)
+    return colors[count.argmax()]
 
 
 print(f"Zrzut zostanie wykonany za {NO_WAIT_SEC} sekund")
@@ -100,12 +106,19 @@ while True:
             showCropWindow = False
     elif k == 120:
         data = get_mss_object(rectStart, rectStop)
-        print(data)
         with open(OUT_FILE_NAME, 'w') as f:
             json.dump(data, f, ensure_ascii=False)
         print(f"zapisano do pliku {OUT_FILE_NAME}")
-    elif k == 99:
+    elif k == 115:
         filename = input("nazwa pliku: ")
         cv2.imwrite(f"{filename}.png", screen_img)
+    elif k == 99:
+        if not showCropWindow:
+            print("Najpierw zaznacz obszar na obrazie")
+            continue
+        col = dominant_color(screen_img)
+        print("Dominant color:", col)
+        screen_img[:] = (col[0], col[1], col[2], 255)
+
 
 cv2.destroyAllWindows()

@@ -10,6 +10,8 @@ opencv-python = "*"
 pillow = "*"
 numpy = "*"
 mss = "*"
+python3-xlib = "*"
+pyautogui = "*"
 
 [requires]
 python_version = "3.6"

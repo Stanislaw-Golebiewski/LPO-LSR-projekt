@@ -7,7 +7,7 @@ from .controller.simple_controller import SimpleController
 
 class FlappyBird:
     def __init__(self, window_size, image_processor=ColorMatching, controller=SimpleController):
-        self.image_processor = image_processor()
+        self.image_processor = image_processor(window_size)
         self.controller = controller(window_size)
 
     def image_to_data(self, img):
@@ -25,9 +25,9 @@ if __name__ == "__main__":
     img_in = cv2.imread("./flappy_bird/images/game_screen_2.png")
     w_width, w_height, _ = img_in.shape
     fb = FlappyBird((w_width, w_height))
-    data_out, img_out = fb.image_to_data(img_in)
+    data_out = fb.image_to_data(img_in)
     print(data_out)
-    # img_out = fb.data_to_image(data_out, img_in)
+    img_out = fb.data_to_image(data_out, img_in)
     cv2.imshow("image", img_out)
     cv2.waitKey(0)
     cv2.destroyAllWindows()

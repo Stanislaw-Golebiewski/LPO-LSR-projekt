@@ -3,7 +3,9 @@ import cv2
 
 class ColorMatching:
 
-    def __init__(self):
+    def __init__(self, window_size):
+        self.window_width = window_size[0]
+        self.window_height = window_size[1]
         self.masks = {"bird": {
                      "lower": (11, 64, 193),
                      "upper": (33, 216, 222),
@@ -49,41 +51,69 @@ class ColorMatching:
 
             if cnts:
                 if object_name == "pipe":
-                    # out[object_name] = [cv2.boundingRect(c) for c in cnts]
                     out[object_name] = []
                     pipes = [cv2.boundingRect(c) for c in cnts]
-                    temp_dict = {}
+                    pipes_dict = {}
+                    # posegreguj wykryte rury w pary
                     for box in pipes:
                         x = box[0]
-                        if x not in temp_dict:
-                            temp_dict[x] = [box]
+                        if x not in pipes_dict:
+                            pipes_dict[x] = [box]
                         else:
-                            temp_dict[x].append(box)
-
-                    for x in temp_dict:
-                        pair = temp_dict[x]
-                        if len(pair) == 1:
+                            pipes_dict[x].append(box)
+            
+                    all_pipes = []
+                    for x in pipes_dict:
+                        pair = pipes_dict[x]
+                        # odrzuć jeśli to nie jest para
+                        if len(pair) != 2:
                             continue
+                        # zdecyduj która jest górna a która dolna
                         if pair[0][1] < pair[1][1]:
                             up = pair[0]
                             down = pair[1]
                         else:
                             up = pair[1]
                             down = pair[0]
-                        # pipe_center = (up[1] + up[3] + int((down[1] - up[1])/2), up[0] + int(up[2]/2))
-                        pipe_center = (up[0] + int(up[2]/2), up[1] + up[3] + int((down[1] - up[3])/2))
-                        # pipe_center = (down[0], down[1])
-                        out[object_name].append(pipe_center)
+                        
+                        # pipe_center = (up[0] + int(up[2]/2), up[1] + up[3] + int((down[1] - up[3])/2))
 
+                        # obliczamy prostokąt z wolnym miejscem między rurami
+                        pipe_x = up[0]
+                        pipe_y = up[1] + up[3]
+                        pipe_w = up[2]
+                        pipe_h = int(down[1] - up[3])
+                        out[object_name].append((pipe_x, pipe_y, pipe_w, pipe_h))
                 else:
+                    # oblicz środek największego znalezionego konturu (ptak lub dziób)
                     c = max(cnts, key=cv2.contourArea)
                     M = cv2.moments(c)
                     center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
-                    # if object_name == "bird":
-                    #     cv2.circle(img_out, center, 5, (0, 0, 255), -1)
                     out[object_name] = center
             else:
                 out[object_name] = None
+
+        # oblicz najbliższą krawędź (dodajemy 20 px zapasu)
+        if out["pipe"] and out["bird"]:
+            closest_edge_y = int(self.window_height / 2)
+            closest_edge_x = 10000
+            temp_bird_x = out["bird"][0]
+
+            for p in out["pipe"]:
+                # jeśli ptak jest za krawędzią
+                if p[0] + p[2] + 10 < temp_bird_x:
+                    continue
+                # jeśli ptka jest między krawędziemi danej rury
+                elif p[0] - 10 < temp_bird_x < p[0] + p[2] + 10:
+                    closest_edge_x = p[0] + p[2] + 20
+                    closest_edge_y = p[1] + int(p[3] / 2)
+                    break
+                elif p[0] - 10 > temp_bird_x and p[0] - temp_bird_x < closest_edge_x:
+                    closest_edge_x = p[0] - 20
+                    closest_edge_y = p[1] + int(p[3] / 2)
+            out["closest_edge"] = (closest_edge_x, closest_edge_y)
+        else:
+            out["closest_edge"] = None
 
         return out
 
@@ -96,12 +126,26 @@ class ColorMatching:
                 center = data[object]
                 cv2.circle(img_out, center, 5, (0, 0, 255), -1)
             elif object == "pipe":
-                for center in data[object]:
-                    cv2.circle(img_out, center, 5, (0, 255, 255), -1)
+                for p in data[object]:
+                    # left upper - x, y
+                    lu_p = (p[0], p[1])
+                    # right upper - x + width, y
+                    ru_p = (p[0] + p[2], p[1])
+                    # left lower - x, y + height
+                    ll_p = (p[0], p[1] + p[3])
+                    # right lower - x + width, y + height
+                    rl_p = (p[0] + p[2], p[1] + p[3])
+                    for point in [lu_p, ru_p, ll_p, rl_p]:
+                        cv2.circle(img_out, point, 5, (0, 255, 255), -1)
+
             elif object == "bill":
                 center = data[object]
                 cv2.circle(img_out, center, 5, (255, 0, 0), -1)
-                # for p in data[object]:
-                #     x, y, w, h = p
-                #     cv2.rectangle(img_out, (x, y), (x + w, y + h), (0, 255, 255), 2)
+            elif object == "closest_edge":
+                center = data["closest_edge"]
+                line_1 = [(center[0], center[1] + 30), (center[0], center[1] - 30)]
+                line_2 = [(center[0] - 30, center[1]), (center[0] + 30, center[1])]
+                cv2.circle(img_out, data["closest_edge"], 5, (45, 125, 64), -1)
+                cv2.line(img_out, line_1[0], line_1[1], (45, 125, 65), 2, cv2.LINE_4, 0)
+                cv2.line(img_out, line_2[0], line_2[1], (45, 125, 65), 2, cv2.LINE_4, 0)
         return img_out

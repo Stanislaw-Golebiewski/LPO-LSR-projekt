@@ -12,6 +12,7 @@ numpy = "*"
 mss = "*"
 python3-xlib = "*"
 pyautogui = "*"
+pyuserinput = "*"
 
 [requires]
 python_version = "3.6"

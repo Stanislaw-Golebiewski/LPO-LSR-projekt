@@ -32,8 +32,8 @@ class FixedFuzzy:
         height_x = np.arange(-self.window_height, self.window_height, 1)
         height = ctrl.Antecedent(height_x, 'height')
         height['too_high'] = fuzzy_linear_fnc(height_x, (20, 0), (200, 1))
-        height['too_low'] = fuzzy_linear_fnc(height_x, (-200, 1), (-20, 0))
-        height['perfect'] = fuzz.trimf(height_x, [-30, 0, 25])
+        height['too_low'] = fuzzy_linear_fnc(height_x, (-100, 1), (-20, 0))
+        height['perfect'] = fuzz.trimf(height_x, [-30, 0, 35])
 
         # height.view()
         # plt.show()
@@ -51,7 +51,7 @@ class FixedFuzzy:
         alt_change_x = np.arange(-self.window_height, self.window_height, 1)
         alt_change = ctrl.Antecedent(alt_change_x, 'alt_change')
         alt_change['positive'] = fuzzy_linear_fnc(alt_change_x, (1, 0), (20, 1))
-        alt_change['negative'] = fuzzy_linear_fnc(alt_change_x, (-20, 1), (-1, 0))
+        alt_change['negative'] = fuzzy_linear_fnc(alt_change_x, (-40, 1), (-1, 0))
         alt_change['unchanged'] = fuzz.trimf(height_x, [-2, 0, 2])
 
         tap_x = np.arange(0, 10, 1)
@@ -107,7 +107,7 @@ class FixedFuzzy:
 
         prev_bill = self.prev_bill_y
         dist_to_edge = cle[0] - bird[0]
-        dist_to_optimal_height = cle[1] - bird[1] + 30
+        dist_to_optimal_height = cle[1] - bird[1] + 40
         fill_delta_y = bird[1] - data["bill"][1]
         # bill_change = self.prev_bill_delta_y - fill_delta_y
 

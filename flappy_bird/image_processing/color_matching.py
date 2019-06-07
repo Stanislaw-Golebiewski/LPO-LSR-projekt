@@ -105,11 +105,11 @@ class ColorMatching:
                     continue
                 # jeśli ptka jest między krawędziemi danej rury
                 elif p[0] - 10 < temp_bird_x < p[0] + p[2] + 10:
-                    closest_edge_x = p[0] + p[2] + 40
+                    closest_edge_x = p[0] + p[2] + 60
                     closest_edge_y = p[1] + int(p[3] / 2)
                     break
                 elif p[0] - 10 > temp_bird_x and p[0] - temp_bird_x < closest_edge_x:
-                    closest_edge_x = p[0] - 40
+                    closest_edge_x = p[0] - 60
                     closest_edge_y = p[1] + int(p[3] / 2)
             out["closest_edge"] = (closest_edge_x, closest_edge_y)
         else:

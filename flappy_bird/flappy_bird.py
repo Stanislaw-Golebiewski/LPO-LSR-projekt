@@ -3,10 +3,11 @@ import cv2
 from .image_processing.color_matching import ColorMatching
 
 from .controller.simple_controller import SimpleController
+from .controller.fixed_fuzzy import FixedFuzzy
 
 
 class FlappyBird:
-    def __init__(self, window_size, image_processor=ColorMatching, controller=SimpleController):
+    def __init__(self, window_size, image_processor=ColorMatching, controller=FixedFuzzy):
         self.image_processor = image_processor(window_size)
         self.controller = controller(window_size)
 
@@ -26,8 +27,8 @@ if __name__ == "__main__":
     w_width, w_height, _ = img_in.shape
     fb = FlappyBird((w_width, w_height))
     data_out = fb.image_to_data(img_in)
-    print(data_out)
     img_out = fb.data_to_image(data_out, img_in)
+    fb.take_acion(data_out)
     cv2.imshow("image", img_out)
     cv2.waitKey(0)
     cv2.destroyAllWindows()

@@ -12,6 +12,8 @@ numpy = "*"
 mss = "*"
 python3-xlib = "*"
 pyuserinput = "*"
+scikit-fuzzy = "*"
+matplotlib = "*"
 
 [requires]
 python_version = "3.6"

@@ -2,18 +2,15 @@ import os
 import cv2
 import json
 
-from flappy_bird.image_processing.color_matching import ColorMatching
-from flappy_bird.controller.simple_controller import SimpleController
-from flappy_bird.controller.fixed_fuzzy import FixedFuzzy
 from utils.setup import run_setup
 
 
-DEFAULT_SETTINGS_FILE_PATH = "./flappy_bird/screen.json"
+DEFAULT_SETTINGS_FILE_PATH = "./dino_chrome/screen.json"
 
 
-class FlappyBird:
+class DinoChrome:
     def __init__(self):
-        self.name = "Flappy Bird (V o)>"
+        self.name = "Dino Chrome"
 
     def setup(self):
         should_run_setup = False
@@ -36,29 +33,31 @@ class FlappyBird:
         self.window_size = (cut_area["width"], cut_area["height"])
         self.screen_cut_area = cut_area
 
-        image_processor = ColorMatching
-        controller = FixedFuzzy
-        self.image_processor = image_processor(self.window_size)
-        self.controller = controller(self.window_size)
+        self.image_processor = None
+        self.controller = None
 
     def image_to_data(self, img):
-        return self.image_processor.image_to_data(img)
+        pass
+        # return self.image_processor.image_to_data(img)
 
     def data_to_image(self, data, img):
-        return self.image_processor.data_to_image(data, img)
+        pass
+        # return self.image_processor.data_to_image(data, img)
 
     def take_acion(self, data):
-        return self.controller.take_action(data)
+        pass
+        # return self.controller.take_action(data)
 
     def test(self):
-        img_in = cv2.imread("./flappy_bird/images/game_screen_2.png")
-        data_out = self.image_to_data(img_in)
-        img_out = self.data_to_image(data_out, img_in)
-        print(data_out)
-        # self.take_acion(data_out)
-        cv2.imshow("image", img_out)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        print("Test")
+        # img_in = cv2.imread("./flappy_bird/images/game_screen_2.png")
+        # data_out = self.image_to_data(img_in)
+        # img_out = self.data_to_image(data_out, img_in)
+        # print(data_out)
+        # # self.take_acion(data_out)
+        # cv2.imshow("image", img_out)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
 
 
 # przy bezpośrednim uruchomieniu testujemy na screenie (> python flappy_bird.py)

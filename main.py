@@ -2,29 +2,32 @@ import time
 import cv2
 import mss
 import json
+import sys
 import numpy as np
 
 from flappy_bird.flappy_bird import FlappyBird
-
+from dino_chrome.dino_chrome import DinoChrome
 
 IN_FILE_NAME = "screen.json"
 TARGET_ACTIONS_PER_SEC = 10
 
+# game = FlappyBird()
+game = DinoChrome()
+game.setup()
+cut_area = game.screen_cut_area
 
-with open(IN_FILE_NAME, 'r') as f:
-    cut_area = json.load(f)
+if len(sys.argv) > 1:
+    if "--test" in sys.argv:
+        print("> Tryb testowy")
+        game.test()
+        sys.exit(0)
 
-window_width = cut_area["width"]
-window_height = cut_area["height"]
-
-cv2.namedWindow("image")
-cv2.moveWindow("image", 0, 0)
+cv2.namedWindow(game.name)
+cv2.moveWindow(game.name, 0, 0)
 
 # frame counter
 f_counter = 0
 start = time.time()
-
-game = FlappyBird((window_width, window_height))
 current_fps = 0
 min_sec_gap_between_actions = 1.0 / TARGET_ACTIONS_PER_SEC
 prev_action = time.time()
@@ -42,7 +45,7 @@ with mss.mss() as sct:
             prev_action = time.time()
 
         cv2.putText(fb_image, str(int(current_fps)), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-        cv2.imshow("image", fb_image)
+        cv2.imshow(game.name, fb_image)
         k = cv2.waitKey(1)
         if k == 27:
             break

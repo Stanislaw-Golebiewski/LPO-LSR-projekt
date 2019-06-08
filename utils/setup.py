@@ -61,7 +61,7 @@ def dominant_color(img):
     return colors[count.argmax()]
 
 
-def run_setup(file_out_path):
+def run_setup(file_out_path=DEFAULT_OUT_FILE):
     global drawing, rectStart, rectStop, screen_img, screen_img_clear, rectanglePicked
 
     print(file_out_path)

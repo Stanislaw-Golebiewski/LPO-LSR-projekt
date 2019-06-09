@@ -52,7 +52,6 @@ class ColorMatching:
         return out
 
     def data_to_image(self, data, img):
-        print(data)
         img_out = img.copy()
         for object_name in data:
             if not data[object_name]:

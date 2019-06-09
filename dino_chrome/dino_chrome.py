@@ -4,6 +4,7 @@ import json
 
 from utils.setup import run_setup
 from dino_chrome.image_processing.color_matching import ColorMatching
+from dino_chrome.controller.simple_controller import SimpleController
 
 
 DEFAULT_SETTINGS_FILE_PATH = "./dino_chrome/screen.json"
@@ -35,7 +36,7 @@ class DinoChrome:
         self.screen_cut_area = cut_area
 
         self.image_processor = ColorMatching(self.window_size)
-        self.controller = None
+        self.controller = SimpleController(self.window_size)
 
     def image_to_data(self, img):
         return self.image_processor.image_to_data(img)
@@ -44,11 +45,9 @@ class DinoChrome:
         return self.image_processor.data_to_image(data, img)
 
     def take_acion(self, data):
-        pass
-        # return self.controller.take_action(data)
+        return self.controller.take_action(data)
 
     def test(self):
-        print("Test")
         img_in = cv2.imread("./dino_chrome/images/game_dino_3.png")
         data_out = self.image_to_data(img_in)
         img_out = self.data_to_image(data_out, img_in)
@@ -56,16 +55,3 @@ class DinoChrome:
         cv2.imshow("image", img_out)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
-
-
-# przy bezpośrednim uruchomieniu testujemy na screenie (> python flappy_bird.py)
-# if __name__ == "__main__":
-#     img_in = cv2.imread("./flappy_bird/images/game_screen_2.png")
-#     w_width, w_height, _ = img_in.shape
-#     fb = FlappyBird((w_width, w_height))
-#     data_out = fb.image_to_data(img_in)
-#     img_out = fb.data_to_image(data_out, img_in)
-#     fb.take_acion(data_out)
-#     cv2.imshow("image", img_out)
-#     cv2.waitKey(0)
-#     cv2.destroyAllWindows()

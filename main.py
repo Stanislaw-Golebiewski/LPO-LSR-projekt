@@ -11,17 +11,25 @@ from dino_chrome.dino_chrome import DinoChrome
 IN_FILE_NAME = "screen.json"
 TARGET_ACTIONS_PER_SEC = 10
 
-# game = FlappyBird()
-game = DinoChrome()
+# pick game
+games = [("Flappy Bird", FlappyBird), ("T-Rex Chrome", DinoChrome)]
+for num, g in enumerate(games):
+    print(f"  {num}. {g[0]}")
+
+picked_game_num = int(input(f":> pick game [{0} - {len(games) - 1}]: "))
+print(f"> {games[picked_game_num][0]} picked")
+game = games[picked_game_num][1]()
 game.setup()
 cut_area = game.screen_cut_area
 
+# is test mode flag on?
 if len(sys.argv) > 1:
     if "--test" in sys.argv:
         print("> Tryb testowy")
         game.test()
         sys.exit(0)
 
+# run game
 cv2.namedWindow(game.name)
 cv2.moveWindow(game.name, 0, 0)
 
